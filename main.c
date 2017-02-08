@@ -16,11 +16,11 @@
 #include <string.h>
 
 #define length 40
+#define COUNT 10
 unsigned char array[length];
 unsigned char comparator[1];
 unsigned short currFree = 0;
-unsigned short leftBefore = 0;
-unsigned short rightBefore = 0;
+unsigned short currPrint = 0;
 
 struct Node{
     unsigned char key;
@@ -34,16 +34,19 @@ void putIndex (unsigned short idx, unsigned short start);
 void writeArrayToFile();
 unsigned char* readFile();
 void printArray (unsigned char* test);
+void printTree(unsigned short index, int space);
 void insertChar (char key, int lastMatch);
 void insertString(char* input);
 
 int main(int argc, char** argv) {
     
     
-    insertString("udin");
     insertString("uda");
+    insertString("udin");
     writeArrayToFile();
     unsigned char *test = readFile();
+
+    printTree(0,0);
     
     return (EXIT_SUCCESS);
 }
@@ -78,8 +81,45 @@ unsigned char* readFile(){
 
 void printArray(unsigned char* test){
     int i;
-    for(i=0; i< length; i++)
-        printf("isi test[%d]: %u \n", i, test[i]);
+    for(i=0; i< currFree; i++)
+        printf("arr[%d]: %u \n", i, test[i]);
+}
+
+void printTree(unsigned short index, int space){
+	 // // Base case
+	 //  printf("arrayTree[%d]: %u \n", index, array[index]);
+    if (array[index] == 0)
+        printf("");
+ 
+    // Increase distance between levels
+    space += COUNT;
+
+
+ 
+    // Process right child first
+    if(getIndex(index+3) > 0)
+    	printTree(getIndex(index+3), space);
+    else {
+    	printf("");
+    }
+
+
+    // Print current node after space
+    // count
+    printf("|");
+    int i;
+    for (i = COUNT; i < space; i++)
+        printf("-");
+    printf("%d\n", array[index]);
+ 
+
+    // Process left child
+    if(getIndex(index+1) > 0)
+    	printTree(getIndex(index+1), space);
+    else {
+    	printf("");
+    }
+ 
 }
 
 void insertChar(char key, int lastMatch){
@@ -109,7 +149,7 @@ void insertString(char* input){
         printf("array[%d]: %u -- input[%d]: %u \n", checker, array[checker], idxInput, comparator[0]);
         if((char) array[checker] == comparator[0]) {
             int nextIdx = getIndex(checker+1);
-            if(nextIdx != -1)
+            if(nextIdx != 0)
             {
                 checker = getIndex(checker+1);
                 idxInput++;
@@ -119,8 +159,16 @@ void insertString(char* input){
                 stop = '1';
             }
         } else{
-            printf("checker: %d \n", checker);
-            stop = '1';
+            	printf("checker: %d \n", checker);
+
+            	int rightIdx = getIndex(checker+3);
+            	while(rightIdx != 0)
+            	{
+            		checker=rightIdx;
+            		rightIdx = getIndex(checker+3);
+            	}	
+
+            	stop = '1';
         }
     }
     
